@@ -29,6 +29,38 @@ L'API (`api.py`), développée avec Flask, met à disposition les ventes agrég�
 | `data/bookworld_final.db` | Base finale produite par le pipeline, fournie pour tester l'API sans relancer le pipeline |
 | `docs/schema_bookworld.png` | Schéma relationnel de la base finale |
 
+## Récupérer le projet
+
+Le dépôt est public : le cloner ne demande ni compte ni mot de passe.
+
+```
+git clone https://github.com/DRD-web/bookworld-pipeline.git
+cd bookworld-pipeline
+```
+
+Le dossier cloné contient déjà les données (`data/`), mais pas le fichier `.env` (voir « Configuration du token de l'API »). Toutes les commandes suivantes se lancent depuis ce dossier.
+
+## Authentification : token de l'API, token GitHub, clé SSH
+
+Trois mécanismes à ne pas confondre :
+
+| Mécanisme | Ce qu'il protège | Dans ce projet |
+|---|---|---|
+| Token de l'API (`API_TOKEN` dans `.env`) | la route `/sales-by-country` de l'API | utilisé (voir plus bas) |
+| Token GitHub (Git Credential Manager) | l'écriture (`git push`) sur le dépôt GitHub | utilisé |
+| Clé SSH | l'écriture sur le dépôt, en alternative au token GitHub | non utilisée |
+
+Lire et cloner le dépôt ne demande aucune authentification, car il est public. Il en faut une pour y écrire.
+
+**Token GitHub (méthode utilisée).** Le projet est cloné et poussé en HTTPS. Au premier `git push`, le Git Credential Manager (fourni avec Git pour Windows) ouvre le navigateur : on se connecte à GitHub et on autorise l'accès. Le jeton obtenu est conservé dans le gestionnaire d'identifiants de Windows et réutilisé aux envois suivants. Aucun mot de passe n'est saisi dans le terminal et aucun jeton n'est stocké dans le dépôt.
+
+**Clé SSH (alternative, non testée dans ce projet).** Procédure standard :
+
+1. Créer une paire de clés : `ssh-keygen -t ed25519 -C "adresse-e-mail"`. La clé privée reste sur l'ordinateur et ne se partage jamais.
+2. Copier le contenu du fichier `.pub` (clé publique) dans GitHub : Settings, SSH and GPG keys, New SSH key.
+3. Cloner avec l'adresse SSH : `git clone git@github.com:DRD-web/bookworld-pipeline.git`.
+4. Tester la connexion : `ssh -T git@github.com`.
+5. 
 ## Installation
 
 Il faut Python 3.11 ou plus récent. Toutes les commandes se lancent depuis la racine du projet (le dossier qui contient `pipeline.py`).
@@ -199,6 +231,7 @@ Pour la même raison, le fichier `data/sales_raw.csv` de ce dépôt n'est pas l'
 - **Pays absent du référentiel** : les 19 commandes du pays NL n'ont pas de nom de pays dans la base de référence ; le nom « Netherlands » est ajouté dans le code (`NOMS_PAYS_MANQUANTS`). Les ventes du Portugal, pays marqué inactif dans le référentiel, sont conservées : le filtre `is_active = 1` ne porte que sur les canaux de vente. Ces deux choix sont assumés.
 - **Chiffre d'affaires** : calculé après remise (quantité × prix × (1 − remise)), hors taxes (le prix du site est sans taxe). Seul le chiffre d'affaires est converti en euros, commande par commande, au taux de sa date : le prix des livres n'est pas converti, car un prix en euros dépend de la date. Pour un week-end ou un jour férié, c'est le taux du dernier jour publié qui s'applique.
 - **Table `category_rules`** : non utilisée, car la catégorie des livres n'apparaît pas sur la première page du site.
+- - **Première date de taux** : les taux sont demandés à partir de la date de la première vente (le 03/01/2025, un vendredi). Si une première vente tombait un week-end, aucun taux antérieur n'existerait et le pipeline s'arrêterait avec le message « taux de change non rattachés » ; avec ces données, ce cas ne se présente pas.
 - **Services externes** : le pipeline dépend du site books.toscrape.com et de l'API Frankfurter. Si l'un d'eux est indisponible, il s'arrête ; la base finale fournie permet de tester l'API malgré tout.
 - **Écriture de la base** : si l'écriture de la base finale est interrompue, elle peut rester incomplète ; relancer le pipeline la recrée entièrement.
 - **Dépendances** : `requirements.txt` ne fige que les 5 bibliothèques utilisées directement.
