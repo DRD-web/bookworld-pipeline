@@ -60,7 +60,7 @@ Lire et cloner le dépôt ne demande aucune authentification, car il est public.
 2. Copier le contenu du fichier `.pub` (clé publique) dans GitHub : Settings, SSH and GPG keys, New SSH key.
 3. Cloner avec l'adresse SSH : `git clone git@github.com:DRD-web/bookworld-pipeline.git`.
 4. Tester la connexion : `ssh -T git@github.com`.
-5. 
+   
 ## Installation
 
 Il faut Python 3.11 ou plus récent. Toutes les commandes se lancent depuis la racine du projet (le dossier qui contient `pipeline.py`).
