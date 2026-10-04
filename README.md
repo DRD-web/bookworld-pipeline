@@ -95,7 +95,7 @@ source venv/bin/activate
 python -m pip install -r requirements.txt
 ```
 
-Versions testées le 1er octobre 2026 : pandas 3.0.6, Flask 3.1.3, requests 2.34.2, beautifulsoup4 4.15.0, python-dotenv 1.2.3. Les dépendances indirectes (par exemple numpy 2.5.3) sont installées par pip dans la dernière version compatible au jour de l'installation ; si une version ultérieure pose problème, revenir aux versions indiquées ici.
+Versions testées le 1er octobre 2026 : Python 3.13.9, pandas 3.0.6, Flask 3.1.3, requests 2.34.2, beautifulsoup4 4.15.0, python-dotenv 1.2.3. Les dépendances indirectes (par exemple numpy 2.5.3) sont installées par pip dans la dernière version compatible au jour de l'installation ; si une version ultérieure pose problème, revenir aux versions indiquées ici.
 
 ## Configuration du token de l'API
 
