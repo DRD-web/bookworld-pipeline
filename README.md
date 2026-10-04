@@ -197,7 +197,7 @@ Exemple de réponse (début) :
 
 ## Tester l'API
 
-Avec l'API lancée dans un premier terminal, ouvrir un second terminal à la racine du projet.
+L'API occupe le terminal où elle tourne : pour l'interroger, ouvrir un **second terminal** et se placer dans le **même dossier** (la racine du projet), car le token est lu dans le fichier `.env` de ce dossier. Il n'est pas nécessaire d'activer l'environnement virtuel dans ce second terminal.
 
 Windows (PowerShell) :
 
@@ -215,10 +215,27 @@ TOKEN=$(grep API_TOKEN .env | cut -d= -f2)
 curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:5000/sales-by-country
 ```
 
+Sur un Windows en français, PowerShell affiche les décimales avec une virgule (`4014,7`) ; l'API, elle, renvoie des points, comme dans l'exemple JSON plus haut.
+
+La réponse doit contenir **8 pays** (DE, FR, BE, ES, PT, IE, IT, NL) et 240 commandes au total. Si le tableau affiché semble incomplet, vérifier par un comptage plutôt qu'à l'œil :
+
+Windows (PowerShell) :
+
+```
+(Invoke-RestMethod -Uri http://127.0.0.1:5000/sales-by-country -Headers @{Authorization = "Bearer $token"}).Count
+```
+
+macOS ou Linux :
+
+```
+curl -s -H "Authorization: Bearer $TOKEN" http://127.0.0.1:5000/sales-by-country | python3 -c "import sys, json; print(len(json.load(sys.stdin)))"
+```
+
+Les deux commandes doivent afficher `8`.
+
 Sans le token (ou avec un mauvais token), la seconde route répond par une erreur 401 : `{"error": "Token manquant ou invalide"}`. Si le token n'est pas configuré côté serveur, elle répond par une erreur 500 : `{"error": "Serveur mal configuré : définir API_TOKEN dans .env (voir README)"}`. Dans PowerShell, ces réponses s'affichent sous la forme d'une erreur, ce qui est normal.
 
 Testé sous Windows (PowerShell) et Linux (bash) ; non testé sous macOS.
-
 ## Données personnelles (RGPD)
 
 Le fichier de ventes brutes d'origine contient le nom et le prénom des clients. Ces informations ne sont pas nécessaires à l'usage final de la base : conformément au principe de minimisation des données (RGPD, article 5), le pipeline les supprime, et la base finale n'en contient aucune trace.
