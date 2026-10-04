@@ -74,7 +74,7 @@ python -m venv venv
 venv\Scripts\Activate.ps1
 ```
 
-Si plusieurs versions de Python sont installées, créer l'environnement avec `py -3.13 -m venv venv` (remplacer 3.12 par une version 3.11 ou plus récente).
+Si plusieurs versions de Python sont installées, créer l'environnement avec `py -3.13 -m venv venv` (remplacer 3.13 par une version 3.11 ou plus récente).
 
 Si PowerShell refuse d'exécuter le script d'activation, autoriser les scripts pour la session en cours, puis relancer l'activation :
 
