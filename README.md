@@ -60,10 +60,10 @@ Lire et cloner le dépôt ne demande aucune authentification, car il est public.
 2. Copier le contenu du fichier `.pub` (clé publique) dans GitHub : Settings, SSH and GPG keys, New SSH key.
 3. Cloner avec l'adresse SSH : `git clone git@github.com:DRD-web/bookworld-pipeline.git`.
 4. Tester la connexion : `ssh -T git@github.com`.
-   
+
 ## Installation
 
-Il faut Python 3.11 ou plus récent. Toutes les commandes se lancent depuis la racine du projet (le dossier qui contient `pipeline.py`).
+Il faut Python 3.11 ou plus récent (minimum exigé par pandas 3.0.6). Le projet a été testé avec Python 3.13.9 ; les versions 3.11 et 3.12 n'ont pas été testées. Toutes les commandes se lancent depuis la racine du projet (le dossier qui contient `pipeline.py`).
 
 **1. Créer et activer un environnement virtuel**
 
@@ -74,7 +74,7 @@ python -m venv venv
 venv\Scripts\Activate.ps1
 ```
 
-Si plusieurs versions de Python sont installées, créer l'environnement avec `py -3.12 -m venv venv` (remplacer 3.12 par une version 3.11 ou plus récente).
+Si plusieurs versions de Python sont installées, créer l'environnement avec `py -3.13 -m venv venv` (remplacer 3.12 par une version 3.11 ou plus récente).
 
 Si PowerShell refuse d'exécuter le script d'activation, autoriser les scripts pour la session en cours, puis relancer l'activation :
 
@@ -231,7 +231,7 @@ Pour la même raison, le fichier `data/sales_raw.csv` de ce dépôt n'est pas l'
 - **Pays absent du référentiel** : les 19 commandes du pays NL n'ont pas de nom de pays dans la base de référence ; le nom « Netherlands » est ajouté dans le code (`NOMS_PAYS_MANQUANTS`). Les ventes du Portugal, pays marqué inactif dans le référentiel, sont conservées : le filtre `is_active = 1` ne porte que sur les canaux de vente. Ces deux choix sont assumés.
 - **Chiffre d'affaires** : calculé après remise (quantité × prix × (1 − remise)), hors taxes (le prix du site est sans taxe). Seul le chiffre d'affaires est converti en euros, commande par commande, au taux de sa date : le prix des livres n'est pas converti, car un prix en euros dépend de la date. Pour un week-end ou un jour férié, c'est le taux du dernier jour publié qui s'applique.
 - **Table `category_rules`** : non utilisée, car la catégorie des livres n'apparaît pas sur la première page du site.
-- - **Première date de taux** : les taux sont demandés à partir de la date de la première vente (le 03/01/2025, un vendredi). Si une première vente tombait un week-end, aucun taux antérieur n'existerait et le pipeline s'arrêterait avec le message « taux de change non rattachés » ; avec ces données, ce cas ne se présente pas.
+- **Première date de taux** : les taux sont demandés à partir de la date de la première vente (le 03/01/2025, un vendredi). Si une première vente tombait un week-end, aucun taux antérieur n'existerait et le pipeline s'arrêterait avec le message « taux de change non rattachés » ; avec ces données, ce cas ne se présente pas.
 - **Services externes** : le pipeline dépend du site books.toscrape.com et de l'API Frankfurter. Si l'un d'eux est indisponible, il s'arrête ; la base finale fournie permet de tester l'API malgré tout.
 - **Écriture de la base** : si l'écriture de la base finale est interrompue, elle peut rester incomplète ; relancer le pipeline la recrée entièrement.
 - **Dépendances** : `requirements.txt` ne fige que les 5 bibliothèques utilisées directement.
