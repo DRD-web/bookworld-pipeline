@@ -250,6 +250,7 @@ Pour la même raison, le fichier `data/sales_raw.csv` de ce dépôt n'est pas l'
 - **Table `category_rules`** : non utilisée, car la catégorie des livres n'apparaît pas sur la première page du site.
 - **Première date de taux** : les taux sont demandés à partir de la date de la première vente (le 03/01/2025, un vendredi). Si une première vente tombait un week-end, aucun taux antérieur n'existerait et le pipeline s'arrêterait avec le message « taux de change non rattachés » ; avec ces données, ce cas ne se présente pas.
 - **Services externes** : le pipeline dépend du site books.toscrape.com et de l'API Frankfurter. Si l'un d'eux est indisponible, il s'arrête ; la base finale fournie permet de tester l'API malgré tout.
+- **Code de sortie** : en cas d'échec, le pipeline affiche un message et s'arrête, mais se termine avec le code de sortie 0, celui d'un succès. Un outil d'automatisation ne détecterait donc pas l'échec. Amélioration : renvoyer un code non nul.
 - **Écriture de la base** : si l'écriture de la base finale est interrompue, elle peut rester incomplète ; relancer le pipeline la recrée entièrement.
 - **Dépendances** : `requirements.txt` ne fige que les 5 bibliothèques utilisées directement.
 - **API** : le token est unique et statique (sans expiration ni identité par utilisateur) et circule en HTTP simple, sans HTTPS. L'API utilise le serveur de développement intégré à Flask, non prévu pour la production, et lit un chemin relatif : elle doit être lancée depuis la racine du projet.
