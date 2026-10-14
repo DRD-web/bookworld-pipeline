@@ -197,13 +197,13 @@ Exemple de réponse (début) :
 
 ## Tester l'API
 
-L'API occupe le terminal où elle tourne : pour l'interroger, ouvrir un **second terminal** et se placer dans le **même dossier** (la racine du projet), car le token est lu dans le fichier `.env` de ce dossier. Il n'est pas nécessaire d'activer l'environnement virtuel dans ce second terminal.
+L'API occupe le terminal où elle tourne : pour l'interroger, ouvrir un **second terminal** et se placer dans le **même dossier** (la racine du projet), car le token est lu dans le fichier `.env` de ce dossier. Activer aussi l'environnement virtuel dans ce second terminal : le token y est lu avec python-dotenv, comme le fait l'API.
 
 Windows (PowerShell) :
 
 ```
 Invoke-RestMethod -Uri http://127.0.0.1:5000/health
-$token = (Get-Content .env | Select-String "API_TOKEN=").ToString().Split("=")[1]
+$token = python -c "from dotenv import dotenv_values; print(dotenv_values('.env')['API_TOKEN'])"
 Invoke-RestMethod -Uri http://127.0.0.1:5000/sales-by-country -Headers @{Authorization = "Bearer $token"} | Format-Table
 ```
 
@@ -211,7 +211,7 @@ macOS ou Linux :
 
 ```
 curl http://127.0.0.1:5000/health
-TOKEN=$(grep API_TOKEN .env | cut -d= -f2)
+TOKEN=$(python -c "from dotenv import dotenv_values; print(dotenv_values('.env')['API_TOKEN'])")
 curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:5000/sales-by-country
 ```
 
@@ -235,7 +235,8 @@ Les deux commandes doivent afficher `8`.
 
 Sans le token (ou avec un mauvais token), la seconde route répond par une erreur 401 : `{"error": "Token manquant ou invalide"}`. Si le token n'est pas configuré côté serveur, elle répond par une erreur 500 : `{"error": "Serveur mal configuré : définir API_TOKEN dans .env (voir README)"}`. Dans PowerShell, ces réponses s'affichent sous la forme d'une erreur, ce qui est normal.
 
-Testé sous Windows (PowerShell) et Linux (bash) ; non testé sous macOS.
+Testé sous Windows (PowerShell). Les commandes macOS et Linux sont fournies à titre indicatif, sans avoir été testées.
+
 ## Données personnelles (RGPD)
 
 Le fichier de ventes brutes d'origine contient le nom et le prénom des clients. Ces informations ne sont pas nécessaires à l'usage final de la base : conformément au principe de minimisation des données (RGPD, article 5), le pipeline les supprime, et la base finale n'en contient aucune trace.
@@ -253,4 +254,6 @@ Pour la même raison, le fichier `data/sales_raw.csv` de ce dépôt n'est pas l'
 - **Code de sortie** : en cas d'échec, le pipeline affiche un message et s'arrête, mais se termine avec le code de sortie 0, celui d'un succès. Un outil d'automatisation ne détecterait donc pas l'échec. Amélioration : renvoyer un code non nul.
 - **Écriture de la base** : si l'écriture de la base finale est interrompue, elle peut rester incomplète ; relancer le pipeline la recrée entièrement.
 - **Dépendances** : `requirements.txt` ne fige que les 5 bibliothèques utilisées directement.
+- **Route /health** : elle vérifie seulement que le fichier de la base existe, pas qu'il est lisible ; une requête de test sur la base serait plus fiable.
+- **Tests** : aucun test automatisé ; les contrôles de cohérence sont intégrés au pipeline. Amélioration : des tests unitaires avec pytest.
 - **API** : le token est unique et statique (sans expiration ni identité par utilisateur) et circule en HTTP simple, sans HTTPS. L'API utilise le serveur de développement intégré à Flask, non prévu pour la production, et lit un chemin relatif : elle doit être lancée depuis la racine du projet.

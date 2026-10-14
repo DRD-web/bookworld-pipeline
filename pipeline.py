@@ -116,8 +116,8 @@ def get_exchange_rates(date_debut, date_fin, url=RATES_URL):
 
 def clean_sales(sales, countries, catalogue):
     """
-    Retire les noms des clients (RGPD), ajoute le nom du pays
-    (NL via NOMS_PAYS_MANQUANTS) et le prix de chaque livre.
+    Retire les noms des clients (RGPD), exclut les pays de PAYS_EXCLUS (aucun par défaut),
+    ajoute le nom du pays (NL via NOMS_PAYS_MANQUANTS) et le prix de chaque livre.
     """
     orders = sales.drop(columns=["customer_first_name", "customer_last_name"])
     orders = orders[~orders["country_code"].isin(PAYS_EXCLUS)]
@@ -175,6 +175,7 @@ def build_final_tables(countries, channels, orders, sales_by_country):
     channels : canaux actifs (code, nom).
     books : un livre par ligne, construit depuis les commandes.
     orders : les dix colonnes de la table orders, dates converties en texte AAAA-MM-JJ.
+    sales_by_country : l'agrégat par pays calculé par build_sales_by_country.
     """
     final_countries = countries[["country_code", "country_name"]]
     missing = pd.DataFrame(list(NOMS_PAYS_MANQUANTS.items()), columns=["country_code", "country_name"])
